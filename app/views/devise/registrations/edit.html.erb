@@ -34,13 +34,20 @@
 					"data-trigger" => "focus" ,
 					"title" => t("helpers.surname_help_text") %></td>
 			</tr>
-			<tr>
-				<td class="first"><%= t("helpers.org_type.organisation") %></td>
-				<td><%= collection_select(:user,
-						:organisation_id, Organisation.where("parent_id IS NULL").order("name"),
-						:id, :name, {include_blank: constant("organisation_types.organisation")},
-						{ :class => "typeahead org_sign_up" }) %></td>
-			</tr>
+      <tr>
+        <td class="first"><%= t("helpers.org_type.organisation") %></td>
+        <td><%= collection_select(:user,
+                                  :organisation_id, Organisation.where(region_id: current_user.organisation.region_id).order("name"),
+                                  :id, :name, {include_blank: constant("organisation_types.organisation")},
+                                  { :class => "typeahead org_sign_up"}) %>
+          <%= select_tag 'user[organisation_id]', grouped_options_for_select(Organisation.grouped_by_region_name),
+                         include_blank: constant("organisation_types.organisation"),
+                         :class => 'typeahead org_sign_up', id: 'full_dropdown', style: 'display: none;' %>
+          <div>
+            <a href='#' id="see-all-orgs-link"><%= t('helpers.see_all')%></a>
+          </div>
+        </td>
+      </tr>
 			<% other_organisations = Array.new %>
 			<% Organisation.where("parent_id IS ? AND is_other = ?", nil, 1).each do |org| %>
 				<% other_organisations << org.id %>
@@ -55,7 +62,7 @@
         <td class="first"><%= t('helpers.user_details_language') %></td>
         <td><%= collection_select(:user,
                                   :language_id, Language.all.order("name"),
-                                  :id, :name, {:selected => Language.where(default_language: true).first.id},
+                                  :id, :name, {:selected => current_user.language_id},
                                   {:class => "typeahead org_sign_up"}) %></td>
       </tr>
 			<tr>

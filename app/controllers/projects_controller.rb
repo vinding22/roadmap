@@ -54,8 +54,8 @@ class ProjectsController < ApplicationController
 		if user_signed_in? then
 			@project = Project.new
 			@project.organisation = current_user.organisation
-			@funders = orgs_of_type(constant("organisation_types.funder"), true)
-			@institutions = orgs_of_type(constant("organisation_types.institution"))
+			@funders = orgs_of_type(constant("organisation_types.funder"), true) # , current_user.organisation.region_id
+			@institutions = orgs_of_type(constant("organisation_types.institution")) # , current_user.organisation.region_id
 			respond_to do |format|
 			  format.html # new.html.erb
 			  format.json { render json: @project }

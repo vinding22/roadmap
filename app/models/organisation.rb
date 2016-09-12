@@ -15,6 +15,7 @@ class Organisation < ActiveRecord::Base
     belongs_to :parent, :class_name => 'Organisation'
 
 		has_one :language
+		has_one :region
 
 	has_many :children, :class_name => 'Organisation', :foreign_key => 'parent_id'
 
@@ -167,5 +168,17 @@ class Organisation < ActiveRecord::Base
         user.save!
       end
     end
-  end
+	end
+
+	def self.grouped_by_region_name
+		grouped = Organisation.all.group_by{|org| Region.find(org.region_id).name}
+
+		result = []
+
+		grouped.each do |region, orgs|
+			result.push([region, orgs.map{|p| [p.name, p.id]}])
+			end
+
+		result
+	end
 end

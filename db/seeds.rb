@@ -49,10 +49,10 @@ regions = {
         description: '',
         name: 'DE',
     },
-    'Horizon2020' => {
-        abbreviation: 'horizon',
-        description: 'European super region',
-        name: 'Horizon2020',
+    'non-geographical' => {
+        abbreviation: 'nongeo',
+        description: 'Region that contains templates that should be applied to all cases',
+        name: 'non-geographical',
     }
 }
 
@@ -156,6 +156,17 @@ organisation_types = {
      banner_text: "Example: Capital City College ... go mascots!!",
      region: 'UK',
      language: 'English(UK)'
+   },
+   'Different region org'=> {
+       name: "Some DE org",
+       abbreviation: "DIff",
+       domain: "example.differentregionorg.edu",
+       sort_name: "Different region org",
+       organisation_type: "Institution",
+       description: "An example: Different region orgic institution",
+       banner_text: "banner_text",
+       region: 'DE',
+       language: 'DE'
    }
  }
 
@@ -416,7 +427,7 @@ end
      guidance_group: "Regional Science Federation (Funder specific guidance)",
      themes: ["Theme 1"]
    },
-   "Guidance 4" => {
+   "Guidance 5" => {
      text: "Guidance text",
      guidance_group: "CapColl - School of Math and Science (optional institutional guidance)",
      themes: ["Theme 1"]
