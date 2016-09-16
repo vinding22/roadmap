@@ -5,20 +5,28 @@ $( document ).ready(function() {
 		placeholder: "Select a funder"
 	});
 */
+    function projectFunderChanged(dataSelector){
+        update_template_options();
+        update_guidance_options();
+        if ($(this).val().length > 0) {
+            $("#other-funder-name").hide();
+            $("#project_funder_name").val("");
+        }
+        else {
+            $("#other-funder-name").show();
+        }
+        $("#institution-control-group").show();
+        $("#create-plan-button").show();
+        $("#confirm-funder").text($(dataSelector).select2('data').text);
+    }
+
 	$("#project_funder_id").change(function () {
-		update_template_options();
-		update_guidance_options();
-		if ($(this).val().length > 0) {
-			$("#other-funder-name").hide();
-			$("#project_funder_name").val("");
-		}
-		else {
-			$("#other-funder-name").show();
-		}
-		$("#institution-control-group").show();
-		$("#create-plan-button").show();
-		$("#confirm-funder").text($("#project_funder_id").select2('data').text);
+        projectFunderChanged.bind(this)("#project_funder_id");
 	});
+
+    $("#full_dropdown_funders").change(function () {
+        projectFunderChanged.bind(this)("#full_dropdown_funders");
+    });
 
 	$("#no-funder").click(function(e) {
 		e.preventDefault();
@@ -35,11 +43,19 @@ $( document ).ready(function() {
 		$("#confirm-funder").text($(this).val());
 	});
 
+    function projectInstitutionChanged(dataSelector){
+        update_template_options();
+        update_guidance_options();
+        $("#confirm-institution").text($(dataSelector).select2('data').text);
+    }
+
 	$("#project_institution_id").change(function () {
-		update_template_options();
-		update_guidance_options();
-		$("#confirm-institution").text($("#project_institution_id").select2('data').text);
+        projectInstitutionChanged("#project_institution_id");
 	});
+
+    $("#full_dropdown_institution").change(function () {
+        projectInstitutionChanged("#full_dropdown_institution");
+    });
 
 	$("#no-institution").click(function() {
 		$("#project_institution_id").select2("val", "");
@@ -79,6 +95,7 @@ $( document ).ready(function() {
 	});
 
 	$("#new-project-confirmed").click(function (){
+        removeExtraParams();
 		$("#new_project").submit();
 	});
 
@@ -94,14 +111,15 @@ $( document ).ready(function() {
 
 	$("#default-template-confirmed").click(function (){
 		$("#default_tag").val('true');
-		$("#new_project").submit();
+        removeExtraParams();
+        $("#new_project").submit();
 	});
 
 
 	function update_template_options() {
 		var options = {};
-		var funder = $("#project_funder_id").select2('val');
-		var institution = $("#project_institution_id").select2('val');
+		var funder = getCurrentFunderVal();
+		var institution = getCurrentInstitutionVal();
 		$.ajax({
 			type: 'GET',
 			url: "possible_templates.json?institution="+institution+"&funder="+funder,
@@ -134,7 +152,7 @@ $( document ).ready(function() {
 	}
 
 	function update_guidance_options() {
-		var institution = $("#project_institution_id").select2('val');
+		var institution = getCurrentInstitutionVal();
 		var template = $("#project_dmptemplate_id :selected").val();
 		var options = null;
 		
@@ -166,4 +184,82 @@ $( document ).ready(function() {
 			$("#guidance-control-group").hide();
 		}
 	}
+
+    $("#see-all-funders-link").click(function(e){
+        e.preventDefault();
+
+        // add float to the <li> so that dropdown is displayed on the same line the label is
+        $($($('#funder-control-group').children()[0]).children()[0]).css('float','left');
+
+        // hide see all text
+        $("#see-all-funders-link").hide();
+
+        // reset the original dropdown select
+        $("#s2id_project_funder_id").select2("val", "");
+
+        // hide the original dropdown
+        $("#s2id_project_funder_id").hide();
+
+        // show the new dropdown
+        $("#s2id_full_dropdown_funders").show();
+    });
+
+    $("#see-all-institutions-link").click(function(e){
+        e.preventDefault();
+
+        // add float to the <li> so that dropdown is displayed on the same line the label is
+        $($($('#institution-control-group').children()[0]).children()[0]).css('float','left');
+
+        // hide see all text
+        $("#see-all-institutions-link").hide();
+
+        // reset the original dropdown select
+        $("#s2id_project_institution_id").select2("val", "");
+
+        // hide the original dropdown
+        $("#s2id_project_institution_id").hide();
+
+        // show the new dropdown
+        $("#s2id_full_dropdown_institution").show();
+    });
+
+    function removeExtraParams(){
+        // remove inactive funder dropdown
+        if($("#s2id_project_funder_id").select2("val")){
+            $("#full_dropdown_funders").remove();
+        } else {
+            $("#project_funder_id").remove();
+        }
+
+        // remove inactive institution dropdown
+        if($("#s2id_project_institution_id").select2("val")){
+            $("#full_dropdown_institution").remove();
+        } else {
+            $("#project_institution_id").remove();
+        }
+    }
+
+    /**
+     * Right Funder dropdown has to be picked
+     * @returns {jQuery}
+     */
+    function getCurrentFunderVal(){
+        if($("#s2id_project_funder_id").select2("val")){
+            return $("#project_funder_id").select2('val');
+        } else {
+            return $("#full_dropdown_funders").select2('val');
+        }
+    }
+
+    /**
+     * Right Institution dropdown has to be picked
+     * @returns {jQuery}
+     */
+    function getCurrentInstitutionVal(){
+        if($("#s2id_project_institution_id").select2("val")){
+            return $("#project_institution_id").select2('val');
+        } else {
+            return $("#full_dropdown_institution").select2('val');
+        }
+    }
 });

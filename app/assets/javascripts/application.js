@@ -19,6 +19,7 @@
 //= require tinymce-jquery
 //= require i18n
 //= require i18n/translations
+//= require edit_profile.js
 
 
 $( document ).ready(function() {

@@ -54,8 +54,10 @@ class ProjectsController < ApplicationController
 		if user_signed_in? then
 			@project = Project.new
 			@project.organisation = current_user.organisation
-			@funders = orgs_of_type(constant("organisation_types.funder"), true)
-			@institutions = orgs_of_type(constant("organisation_types.institution"))
+			@funders = orgs_of_type(constant('organisation_types.funder'), true, current_user.organisation.region_id)
+			@funders_without_matching_region = orgs_of_type(constant('organisation_types.funder'), true, nil, true)
+			@institutions = orgs_of_type(constant('organisation_types.institution'), false, current_user.organisation.region_id)
+			@institutions_without_matching_region = orgs_of_type(constant('organisation_types.institution'), false, nil, true)
 			respond_to do |format|
 			  format.html # new.html.erb
 			  format.json { render json: @project }
@@ -274,19 +276,37 @@ class ProjectsController < ApplicationController
 
 	private
 
-	def orgs_of_type(org_type_name, published_templates = false)
+	def orgs_of_type(org_type_name, published_templates = false, region_id = nil, group_by_region_name = false)
 		org_type = OrganisationType.find_by_name(org_type_name)
 		all_such_orgs = org_type.organisations
+
+		# if published_templates is true then filter out founders which haven't got any templates
 		if published_templates then
-			with_published = Array.new
-			all_such_orgs.each do |o|
-				if o.published_templates.count > 0 then
-					with_published << o
-				end
+			all_such_orgs = all_such_orgs.select do |o|
+				o.published_templates.count > 0
 			end
-			return with_published.sort_by {|o| [o.sort_name, o.name] }
-		else
-			return all_such_orgs.sort_by {|o| [o.sort_name, o.name] }
 		end
+
+		# if region_id isn't nil then filter out founders with region_id different than the provided one
+		if !region_id.nil? then
+			all_such_orgs = all_such_orgs.select do |o|
+				o.region_id == region_id
+			end
+		end
+
+		if !group_by_region_name
+			return all_such_orgs.sort_by {|o| [o.sort_name, o.name] }
+		else
+			result = []
+
+			all_such_orgs.group_by{|org| Region.find(org.region_id).name}.each do |region, orgs|
+				result.push([region, orgs.map{|p| [p.name, p.id]}])
+			end
+
+			logger.fatal(result)
+
+			return result
+		end
+
 	end
 end

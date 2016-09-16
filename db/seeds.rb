@@ -49,10 +49,10 @@ regions = {
         description: '',
         name: 'DE',
     },
-    'Horizon2020' => {
-        abbreviation: 'horizon',
-        description: 'European super region',
-        name: 'Horizon2020',
+    'non-geographical' => {
+        abbreviation: 'nongeo',
+        description: 'Region that contains templates that should be applied to all cases',
+        name: 'non-geographical',
     }
 }
 
@@ -63,26 +63,6 @@ regions.each do |l, details|
     region.description = details[:description]
     region.name = details[:name]
     region.save!
-  end
-end
-
-region_groups = {
-    'UK' => {
-        super_region_name: 'Horizon2020',
-        region_name: 'UK',
-    },
-    'DE' => {
-        super_region_name: 'Horizon2020',
-        region_name: 'DE',
-    }
-}
-
-region_groups.each do |l, details|
-  if RegionGroup.find_by(region_id: details[:region_name]).blank?
-    region_group = RegionGroup.new
-    region_group.super_region_id = Region.find_by_name(details[:super_region_name]).id
-    region_group.region_id = Region.find_by_name(details[:region_name]).id
-    region_group.save!
   end
 end
 
@@ -156,6 +136,17 @@ organisation_types = {
      banner_text: "Example: Capital City College ... go mascots!!",
      region: 'UK',
      language: 'English(UK)'
+   },
+   'Different region org'=> {
+       name: "Some DE org",
+       abbreviation: "DIff",
+       domain: "example.differentregionorg.edu",
+       sort_name: "Different region org",
+       organisation_type: "Institution",
+       description: "An example: Different region orgic institution",
+       banner_text: "banner_text",
+       region: 'DE',
+       language: 'DE'
    }
  }
 
@@ -431,7 +422,7 @@ end
      guidance_group: "Regional Science Federation (Funder specific guidance)",
      themes: ["Theme 1"]
    },
-   "Guidance 4" => {
+   "Guidance 5" => {
      text: "Guidance text",
      guidance_group: "CapColl - School of Math and Science (optional institutional guidance)",
      themes: ["Theme 1"]
