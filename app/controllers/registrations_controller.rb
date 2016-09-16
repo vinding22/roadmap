@@ -40,7 +40,13 @@ class RegistrationsController < Devise::RegistrationsController
  	if user_signed_in? then
 		@user = User.find(current_user.id)
 
-        do_update
+    do_update
+
+    # if user has picked a preffered language clear the locale set in the session
+    if !params[:user][:language_id].nil? then
+      session.delete(:locale)
+    end
+
     else
     	render(:file => File.join(Rails.root, 'public/403.html'), :status => 403, :layout => false)
     end

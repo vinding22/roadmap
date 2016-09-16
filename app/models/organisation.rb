@@ -67,24 +67,6 @@ class Organisation < ActiveRecord::Base
   # returns a list of all guidance groups belonging to other organisations
   #
   # @return [Array<GuidanceGroup>]
-  def self.other_organisations
-    org_types = [GlobalHelpers.constant("organisation_types.funder")]
-    organisations_list = []
-    org_types.each do |ot|
-      new_org_obejct = OrganisationType.find_by_name(ot)
-
-      org_with_guidance = GuidanceGroup.joins(new_org_obejct.organisations)
-
-      organisations_list = organisations_list + org_with_guidance
-    end
-    return organisations_list
-  end
-
-
-  ##
-  # returns a list of all guidance groups belonging to other organisations
-  #
-  # @return [Array<GuidanceGroup>]
 	def self.other_organisations
 		org_types = [GlobalHelpers.constant("organisation_types.funder")]
 		organisations_list = []

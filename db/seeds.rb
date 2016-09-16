@@ -66,26 +66,6 @@ regions.each do |l, details|
   end
 end
 
-region_groups = {
-    'UK' => {
-        super_region_name: 'Horizon2020',
-        region_name: 'UK',
-    },
-    'DE' => {
-        super_region_name: 'Horizon2020',
-        region_name: 'DE',
-    }
-}
-
-region_groups.each do |l, details|
-  if RegionGroup.find_by(region_id: details[:region_name]).blank?
-    region_group = RegionGroup.new
-    region_group.super_region_id = Region.find_by_name(details[:super_region_name]).id
-    region_group.region_id = Region.find_by_name(details[:region_name]).id
-    region_group.save!
-  end
-end
-
 organisation_types = {
  'Organisation' => {
      name: "Organisation"
